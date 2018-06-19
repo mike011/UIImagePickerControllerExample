@@ -13,15 +13,24 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 
     @IBOutlet weak var imageView: UIImageView!
     
-    @IBAction func takePhoto(_ sender: Any) {
-        let picker = UIImagePickerController()
-        picker.delegate = self
-        picker.allowsEditing = true
-        picker.sourceType = UIImagePickerControllerSourceType.camera
+    var camera: UIImagePickerController! = nil
+    
+    func getCamera() -> UIImagePickerController {
+        if camera == nil {
+            let picker = UIImagePickerController()
+            picker.delegate = self
+            picker.allowsEditing = true
+            picker.sourceType = UIImagePickerControllerSourceType.camera
+            camera = picker
+        }
         let flashMode = getFlashMode()
-        picker.cameraFlashMode = flashMode
+        camera.cameraFlashMode = flashMode
+        return camera
+    }
+    
+    @IBAction func takePhoto(_ sender: Any) {
 
-        self.present(picker, animated: true, completion: nil)
+        self.present(getCamera(), animated: true, completion: nil)
     }
 
     @IBAction func setTextForFlashModeButton(_ sender: UIButton) {
@@ -34,6 +43,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
         self.viewDidLoad()
     }
+
     func getFlashMode() -> UIImagePickerControllerCameraFlashMode {
         if flashModeButton.titleLabel?.text == "Auto" {
             return UIImagePickerControllerCameraFlashMode.auto
@@ -54,6 +64,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let camera = getCamera()
+        camera.view.frame = CGRect(x: 0, y: 0, width: imageView.bounds.width, height: imageView.bounds.height)
+        
+        //camera.view.addLayoutGuide(imageView.layoutGuides[0])
+        //let translate = CGAffineTransform(translationX: 0.0, y: 0)
+        //let scale = translate.scaledBy(x:0.5, y: 0.5)
+        //camera.cameraViewTransform = scale
+        imageView.addSubview(camera.view)
         // Do any additional setup after loading the view, typically from a nib.
     }
 }
